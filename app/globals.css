@@ -31,3 +31,18 @@ body {
     text-wrap: balance;
   }
 }
+
+.item {
+  transition: border 0.15s ease-in-out;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+.item__dragging {
+  opacity: 1;
+  border: 2px solid #1f5ed4;
+}
+.item__hovered {
+  border: 2px solid #1f5ed4;
+
+  box-shadow: 0 0 10px 0 rgba(16, 100, 255, 0.678);
+}
