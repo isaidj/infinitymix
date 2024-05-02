@@ -4,7 +4,10 @@ import { useState, useEffect, useRef, useContext, useReducer } from "react";
 import axios from "axios";
 import ItemsContext from "@/context/ItemsContext";
 import { useCompletion } from "ai/react";
-
+import Image from "next/image";
+import fuse from "@/public/images/fuse.png";
+import Mixer from "./Mixer";
+// import fuse from "@/utils/fuse";
 //Interface para definir las propiedades del layout
 interface LayoutProps {
   width: string | number;
@@ -107,6 +110,7 @@ const Layout = ({ width, height }: LayoutProps) => {
         console.log(target);
         console.log(e.dataTransfer?.getData("item"));
       }
+
       //Si el evento (dragstart) tiene dataTransfer, es porque se está arrastrando un ítem
       if (e.dataTransfer) {
         //Obtiene el id del ítem que se está arrastrando, se asigna a la hora de iniciar el arrastre
@@ -137,10 +141,6 @@ const Layout = ({ width, height }: LayoutProps) => {
             //Si el ítem se suelta sobre otro ítem, se fusionan los textos de ambos ítems y se genera un nuevo ítem
             fuse(item, target, x, y);
           }
-        }
-        if (target.classList.contains("item-mixer")) {
-          const mixer = document.getElementById("item-mixer") as HTMLElement;
-          moveItem({ id: data, x: mixer.offsetLeft, y: mixer.offsetTop });
         }
       }
     };
@@ -189,25 +189,11 @@ const Layout = ({ width, height }: LayoutProps) => {
       ref={divRef}
       style={{ width: width, height: "100vh" }}
       id="layout"
-      className="item-container relative bg-gray-800  shadow-inner[1px] border-r-2 border-gray-500 border-dashed "
+      className="item-container relative "
     >
-      <div
-        id="item-mixer"
-        className="item-mixer absolute top-0 left-0 w-60 h-60 bg-blue-900 border-2 border-blue-500 border-dashed rounded-r-lg"
-      ></div>
+      <Mixer />
     </div>
   );
 };
 
 export default Layout;
-
-const Mixer = () => {
-  const [items, setItems] = useState<Item[]>([]);
-
-  return (
-    <div
-      id="item-mixer"
-      className="item-mixer absolute top-0 left-0 w-60 h-60 bg-blue-900 border-2 border-blue-500 border-dashed rounded-r-lg"
-    ></div>
-  );
-};

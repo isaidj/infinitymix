@@ -28,12 +28,11 @@ const ItemsContext = createContext<ItemsContextProps>({
 });
 
 const initialItems: Item[] = [
-  { name: "💧water" },
-  { name: "🔥fire" },
-  { name: "🌱earth" },
-  { name: "🌬️air" },
-  { name: "🌪️tornado" },
-  { name: "🌬️wind" },
+  { name: "💧Agua" },
+  { name: "🔥Fuego" },
+  { name: "🌱Tierra" },
+  { name: "🌬️Aire" },
+  { name: "🕰️Tiempo" },
 ];
 
 export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({

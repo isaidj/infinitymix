@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from "react";
 
 interface ItemProps {
   name: string;
+  type: "item__mixer" | "item__layout";
 }
 const Item = (ItemProps: ItemProps) => {
   const divRef = useRef<HTMLDivElement>(null);
@@ -15,6 +16,9 @@ const Item = (ItemProps: ItemProps) => {
     document.addEventListener("dragend", (event) => {
       const target = event.target as HTMLElement;
       target.style.opacity = "1";
+    // si se suelta en el mixer se elimina el item
+
+
     });
 
     document.addEventListener("dragenter", (event) => {
@@ -45,8 +49,8 @@ const Item = (ItemProps: ItemProps) => {
     <div
       ref={divRef}
       id={ItemProps.name}
-      className="bg-gray-700 text-white border border-gray-600 rounded-sm  text-center w-auto h-fit py-1 px-2 text-nowrap item new-item"
-      draggable="true"
+      className={`item new-item ${ItemProps.type}`}
+      draggable
     >
       {ItemProps.name}
     </div>
