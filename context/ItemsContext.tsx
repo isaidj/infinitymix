@@ -9,6 +9,7 @@ import React, {
 // Interface para definir las propiedades de los ítems
 interface Item {
   name: string;
+
 }
 
 // Interface para definir las propiedades del contexto

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-
+import "./item.css";
 interface ItemProps {
   name: string;
   type: "item__mixer" | "item__layout";

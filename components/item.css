@@ -1,0 +1,13 @@
+.item__canva{
+    position: absolute;
+    background-color: rgb(56, 57, 59);
+    color: #e7e7e7;
+    /* border: 2px solid rgb(42, 44, 47); */
+    border-radius: 0.5rem;
+    width: auto;
+    height: fit-content;
+    padding: 0.2rem 0.5rem;
+    white-space: nowrap;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.13);
+    cursor: pointer;
+}

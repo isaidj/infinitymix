@@ -25,6 +25,7 @@ const Layout = ({ width, height }: LayoutProps) => {
 
   //Estado para almacenar los ítems en el layout, un array de objetos.
   const { items, checkItem, setItems, addItem } = useContext(ItemsContext);
+  const [itemsLayout, setItemsLayout] = useState<Item[]>([]);
 
   const createItem = ({
     item,
@@ -47,6 +48,8 @@ const Layout = ({ width, height }: LayoutProps) => {
     divRef.current?.appendChild(item);
     item.style.left = `${x - item.clientWidth / 2}px`;
     item.style.top = `${y - item.clientHeight / 2}px`;
+    
+    setItemsLayout((prevItems) => [ ...prevItems, { id: item.id, x, y } ]);
   };
 
   const cloneItem = (item: Item) => {
@@ -66,6 +69,11 @@ const Layout = ({ width, height }: LayoutProps) => {
     const newItem = document.getElementById(item.id) as HTMLElement;
     newItem.style.left = `${item.x - newItem.clientWidth / 2}px`;
     newItem.style.top = `${item.y - newItem.clientHeight / 2}px`;
+    setItemsLayout((prevItems) =>
+      prevItems.map((prevItem) =>
+        prevItem.id === item.id ? { ...prevItem, x: item.x, y: item.y } : prevItem
+      )
+    );
   };
 
   const fuse = async (
@@ -84,17 +92,24 @@ const Layout = ({ width, height }: LayoutProps) => {
     newItem.textContent = wordGnerated;
 
     //el div es del mismo tipo que los items
+ 
+
+    //si el item que se se arrastra es viejo tambien se elimina
+    if (item.classList.contains("old-item")) item.remove();
+    //el target que ya es viejo se elimina
+    target.remove();
+    //se eliminan los items del estado que se fusionaron
+    const idToRemove = [item.id, target.id];
+    const newItems: Item[] = itemsLayout;
+    newItems.filter((item) => !idToRemove.includes(item.id));
+    setItemsLayout(newItems);
+    //se crea un nuevo item con la posición del mouse
     createItem({
       item: newItem,
       itemsLength: items.length + 1,
       x,
       y,
     });
-
-    //si el item que se se arrastra es viejo tambien se elimina
-    if (item.classList.contains("old-item")) item.remove();
-    //el target que ya es viejo se elimina
-    target.remove();
   };
 
   useEffect(() => {

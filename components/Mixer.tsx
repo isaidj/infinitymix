@@ -11,7 +11,8 @@ const Mixer = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const [itemsMixer, setItemsMixer] = React.useState<ItemProps[]>([]);
   const [showResultFuse, setShowResultFuse] = React.useState(false);
-  const {addItem,items} = useItemsContext();
+  const [loading, setLoading] = React.useState(false);
+  const { addItem, items } = useItemsContext();
 
   const addItemToMixer = (item: ItemProps) => {
     setItemsMixer((prevItems) => [...prevItems, item]);
@@ -22,19 +23,21 @@ const Mixer = () => {
     console.log(words);
     const response = await postFuse({ words });
     addItem({ name: response });
-    setShowResultFuse(true)
+    setShowResultFuse(true);
     console.log(response);
     setItemsMixer([]);
   };
 
   const postFuse = async ({ words }: { words: string[] }) => {
     try {
-      const response = await axios.post(
-        "http://192.168.1.127:3000/api/infinity",
-        {
+      setLoading(true);
+      const response = await axios
+        .post("http://192.168.1.127:3000/api/infinity", {
           words: words,
-        }
-      );
+        })
+        .finally(() => {
+          setLoading(false);
+        });
       console.log(response.data);
       return response.data;
     } catch (error) {
@@ -116,8 +119,6 @@ const Mixer = () => {
           className="object-cover w-full h-full opacity-70 pointer-events-none rounded-lg"
           draggable="false"
         />
-        
-      
       </div>
       {/* {
           showResultFuse && <div className="mixer__result bg-gray-900 text-white text-center p-2 absolute bottom-0 w-full">
@@ -125,8 +126,11 @@ const Mixer = () => {
           </div>
           
         } */}
-      <div className="mixer__footer bg-gray-900 text-white py-2 pl-1 cursor-pointer" onClick={handleFuse}>
-         <span className="flare"></span>
+      <div
+        className="mixer__footer bg-gray-900 text-white py-2 pl-1 cursor-pointer"
+        onClick={handleFuse}
+      >
+        <span className="flare"></span>
         <Image
           src={"/fuse.png"}
           alt="fuse"
@@ -136,7 +140,6 @@ const Mixer = () => {
         />
         <div className="mixer__footer__text ml-14 ">Create a new element</div>
       </div>
-      
     </div>
   );
 };
