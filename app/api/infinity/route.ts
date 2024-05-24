@@ -57,16 +57,20 @@ export async function POST(req: Request) {
 
 async function runLlama(model: Model, words: string[]) {
   console.log("words", words);
-  const prompt = `
-  Recibe  palabras y debes encontrar una nueva palabra que las combine de manera lógica o creativa. Cuando hayas pensado en la palabra correcta, responde con un solo sticker y un objeto que represente la combinación de las palabras. Evita conclusiones largas , frases completas o palabras complejas. Solo palabras en español. Por ejemplo:
+  const promptES = `
+  Recibe  palabras y debes encontrar una nueva palabra que las combine de manera lógica o creativa. Cuando hayas pensado en la palabra correcta, responde con un solo sticker y un objeto que represente la combinación de las palabras. Evita conclusiones largas , frases completas o palabras complejas. Solo palabras en español.maximo tres palabras. Por ejemplo:
   Entrada: [palabra] + [palabra]
-  Respuesta: [sticker][palabra]
+  Respuesta: [sticker][palabras]
   Palabras: ${words.map((word) => `[${word}]`).join("+")}`;
+  const promptEN = `Receive words and you must find a new word that combines them in a logical or creative way. When you have thought of the correct word, respond with a single sticker and an object that represents the combination of the words. Avoid long conclusions, complete sentences, or complex words. Only words in English. maximum three words. For example:
+  Input: [word] + [word]
+  Response: [sticker][words]
+  Words: ${words.map((word) => `[${word}]`).join("+")}`;
 
   const input = {
     top_k: 50,
     top_p: 0.9,
-    prompt: prompt,
+    prompt: promptEN,
 
     max_tokens: 512,
     min_tokens: 0,

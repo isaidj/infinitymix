@@ -16,9 +16,7 @@ const Item = (ItemProps: ItemProps) => {
     document.addEventListener("dragend", (event) => {
       const target = event.target as HTMLElement;
       target.style.opacity = "1";
-    // si se suelta en el mixer se elimina el item
-
-
+      // si se suelta en el mixer se elimina el item
     });
 
     document.addEventListener("dragenter", (event) => {

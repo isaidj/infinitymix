@@ -36,7 +36,7 @@ const Canva = () => {
   const fetchFuse = async ({ words }: { words: string[] }) => {
     try {
       const response = await axios.post(
-        "http://192.168.1.127:3000/api/infinity",
+        "http://192.168.1.79:3000/api/infinity",
         {
           words: words,
         }

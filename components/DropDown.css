@@ -1,0 +1,45 @@
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-button {
+  padding: 0.5rem;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: start;
+  border-radius: 0.5rem;
+  user-select: none;
+  font-size: 1rem;
+  font-family: "Poppins", sans-serif;
+  gap: 1rem;
+  border: none;
+  width: 100%;
+  background: #000629;
+  transition: all ease-in-out 0.25s;
+  color: #fff;
+}
+.dropdown-button:hover {
+  background: #021166;
+}
+.active {
+  background-color: #000629;
+}
+
+.dropdown-item > ul {
+  max-height: 0;
+  list-style-type: none;
+  margin: 0;
+  padding-left: 14px;
+  opacity: 0;
+  font-size: smaller;
+  visibility: hidden;
+  transition: all ease-in-out 0.2s;
+}
+
+.active + ul {
+  max-height: 500px;
+  opacity: 1;
+  visibility: visible;
+}

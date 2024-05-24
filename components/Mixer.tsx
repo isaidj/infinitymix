@@ -1,8 +1,10 @@
 import Image from "next/image";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Item from "./Item";
 import axios from "axios";
 import { useItemsContext } from "@/context/ItemsContext";
+import Card from "./Card";
+import { useCard } from "@/context/CardContext";
 interface ItemProps {
   name: string;
 }
@@ -10,8 +12,7 @@ interface ItemProps {
 const Mixer = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const [itemsMixer, setItemsMixer] = React.useState<ItemProps[]>([]);
-  const [showResultFuse, setShowResultFuse] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const { card, setCard } = useCard();
   const { addItem, items } = useItemsContext();
 
   const addItemToMixer = (item: ItemProps) => {
@@ -23,21 +24,38 @@ const Mixer = () => {
     console.log(words);
     const response = await postFuse({ words });
     addItem({ name: response });
-    setShowResultFuse(true);
+    let imageGenerated = await postSdxl({ word: response });
+    setCard({
+      image: imageGenerated,
+      cardContent: { fuseItems: words.join(" + "), result: response },
+      active: true,
+    });
     console.log(response);
+
     setItemsMixer([]);
   };
 
   const postFuse = async ({ words }: { words: string[] }) => {
     try {
-      setLoading(true);
       const response = await axios
-        .post("http://192.168.1.127:3000/api/infinity", {
+        .post("http://192.168.1.79:3000/api/infinity", {
           words: words,
         })
-        .finally(() => {
-          setLoading(false);
-        });
+        .finally(() => {});
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const postSdxl = async ({ word }: { word: string }) => {
+    try {
+      const response = await axios.post(
+        "http://192.168.1.79:3000/api/ai-image",
+        {
+          word: word,
+        }
+      );
       console.log(response.data);
       return response.data;
     } catch (error) {

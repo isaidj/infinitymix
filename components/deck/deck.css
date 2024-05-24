@@ -1,0 +1,146 @@
+.deck__container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background-color: #3f3f3f;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+}
+.deck {
+  position: relative;
+  width: 90%;
+  /* background-color: #970c0c; */
+}
+.deck__slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  overflow: hidden;
+}
+
+.cardDeck {
+  position: absolute;
+  width: 110px;
+  height: 160px;
+  perspective: 1000px; /* Ajusta según lo desees */
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  overflow: hidden;
+  border-radius: 0.5rem;
+  /* background-color: #fff; */
+  transition: all 0.1s ease-in-out;
+  cursor: pointer;
+}
+.cardDeck:hover {
+  z-index: 100 !important;
+  /* transform: scale(1.1) !important; */
+}
+.nextCardAnimation {
+  transition-duration: 0.1s;
+  transform: translateX(150px);
+}
+
+.cardDeck__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  /* box-shadow: 0 0 20px 0 rgba(0, 0, 0, .329); */
+  border-radius: 0.5rem;
+}
+
+.cardDeck.flipped .cardDeck__inner {
+  transform: rotateY(180deg);
+}
+
+.cardDeck__front,
+.cardDeck__back {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+}
+.deleteCard {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #ff000075;
+  color: white;
+  border-radius: 0 0 0 0.5rem;
+  padding: 0.1rem;
+  margin: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+.cardDeck__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0.5rem;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  -webkit-user-drag: none;
+  /* box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.329); */
+}
+.cardDeck__front {
+  /* background-color: #ccc; */
+  border-radius: 0.5rem;
+}
+
+.cardDeck__back {
+  transform: rotateY(180deg);
+  background-color: #ccc;
+  border-radius: 0.5rem;
+}
+
+.cardDeck__back p {
+  padding: 20px;
+}
+.cardDeck__content {
+  /* padding: 1rem; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.cardDeck__content__header {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 10px;
+  align-items: center;
+  background-color: #00000075;
+  border-radius: 0.5rem;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.cardDeck__content__header h1 {
+  font-family: "RINGM";
+  font-size: 0.9rem;
+  letter-spacing: 0.15rem;
+  color: #ffffff;
+  margin: 0;
+  /* //limpiar texto borroso */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.cardDeck__content h2 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.cardDeck__content p {
+  font-size: 1rem;
+  margin: 0;
+}

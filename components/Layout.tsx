@@ -3,10 +3,9 @@ import { useState, useEffect, useRef, useContext, useReducer } from "react";
 
 import axios from "axios";
 import ItemsContext from "@/context/ItemsContext";
-import { useCompletion } from "ai/react";
-import Image from "next/image";
-import fuse from "@/public/images/fuse.png";
 import Mixer from "./Mixer";
+import Card from "./Card";
+import { useCard } from "@/context/CardContext";
 // import fuse from "@/utils/fuse";
 //Interface para definir las propiedades del layout
 interface LayoutProps {
@@ -25,6 +24,8 @@ const Layout = ({ width, height }: LayoutProps) => {
 
   //Estado para almacenar los ítems en el layout, un array de objetos.
   const { items, checkItem, setItems, addItem } = useContext(ItemsContext);
+  const { card, setCard } = useCard();
+
   const [itemsLayout, setItemsLayout] = useState<Item[]>([]);
 
   const createItem = ({
@@ -39,8 +40,8 @@ const Layout = ({ width, height }: LayoutProps) => {
     y: number;
     textContent?: string;
   }) => {
-    item.id = `${item.textContent}-${itemsLength + 1}-${Date.now()}`;
-
+    const nameHeader = item.querySelector("h1")?.textContent;
+    item.id = `${nameHeader}-${itemsLength + 1}-${Date.now()}`;
     item.style.position = "absolute";
     item.style.opacity = "1";
     item.classList.add("old-item");
@@ -48,8 +49,8 @@ const Layout = ({ width, height }: LayoutProps) => {
     divRef.current?.appendChild(item);
     item.style.left = `${x - item.clientWidth / 2}px`;
     item.style.top = `${y - item.clientHeight / 2}px`;
-    
-    setItemsLayout((prevItems) => [ ...prevItems, { id: item.id, x, y } ]);
+
+    setItemsLayout((prevItems) => [...prevItems, { id: item.id, x, y }]);
   };
 
   const cloneItem = (item: Item) => {
@@ -71,7 +72,9 @@ const Layout = ({ width, height }: LayoutProps) => {
     newItem.style.top = `${item.y - newItem.clientHeight / 2}px`;
     setItemsLayout((prevItems) =>
       prevItems.map((prevItem) =>
-        prevItem.id === item.id ? { ...prevItem, x: item.x, y: item.y } : prevItem
+        prevItem.id === item.id
+          ? { ...prevItem, x: item.x, y: item.y }
+          : prevItem
       )
     );
   };
@@ -84,32 +87,42 @@ const Layout = ({ width, height }: LayoutProps) => {
   ) => {
     const newItem = item.cloneNode(true) as HTMLElement;
 
-    let wordGnerated = await postFuse({
-      words: [item.textContent, target.textContent],
-    });
-    wordGnerated ? addItem({ name: wordGnerated }) : null;
-
-    newItem.textContent = wordGnerated;
-
-    //el div es del mismo tipo que los items
- 
-
     //si el item que se se arrastra es viejo tambien se elimina
     if (item.classList.contains("old-item")) item.remove();
     //el target que ya es viejo se elimina
     target.remove();
+    const itemHeader = item.querySelector("h1")?.textContent;
+    const targetHeader = target.querySelector("h1")?.textContent;
+    let wordGnerated = await postFuse({
+      words: [itemHeader, targetHeader],
+    });
+
+    newItem.querySelector("h1")!.textContent = wordGnerated;
+    let imageGenerated = await postSdxl({ word: wordGnerated });
+    addItem({ name: wordGnerated, img: imageGenerated });
+    setCard({
+      image: imageGenerated,
+      cardContent: {
+        fuseItems: `${itemHeader} + ${targetHeader}`,
+        result: wordGnerated,
+      },
+      active: true,
+    });
+
+    //el div es del mismo tipo que los items
+
     //se eliminan los items del estado que se fusionaron
     const idToRemove = [item.id, target.id];
     const newItems: Item[] = itemsLayout;
     newItems.filter((item) => !idToRemove.includes(item.id));
     setItemsLayout(newItems);
     //se crea un nuevo item con la posición del mouse
-    createItem({
-      item: newItem,
-      itemsLength: items.length + 1,
-      x,
-      y,
-    });
+    // createItem({
+    //   item: newItem,
+    //   itemsLength: items.length + 1,
+    //   x,
+    //   y,
+    // });
   };
 
   useEffect(() => {
@@ -121,6 +134,7 @@ const Layout = ({ width, height }: LayoutProps) => {
       const x = e.clientX - rect!.left; //posición x del mouse relativa al layout
       const y = e.clientY - rect!.top; //posición y del mouse relativa al layout
       const target = e.target as HTMLElement;
+      console.log(target);
       if (target.classList.contains("item")) {
         console.log(target);
         console.log(e.dataTransfer?.getData("item"));
@@ -151,6 +165,7 @@ const Layout = ({ width, height }: LayoutProps) => {
           }
           //Si el ítem se suelta sobre otro ítem, se elimina el ítem que se está arrastrando y el ítem sobre el que se suelta, se genera un nuevo ítem con la posición del ítem que se eliminó.
           if (target.classList.contains("item")) {
+            console.log(target);
             //Si el ítem se suelta sobre sí mismo, no se hace nada
             if (target.id === data) return;
             //Si el ítem se suelta sobre otro ítem, se fusionan los textos de ambos ítems y se genera un nuevo ítem
@@ -177,9 +192,23 @@ const Layout = ({ width, height }: LayoutProps) => {
   const postFuse = async ({ words }: { words: string[] }) => {
     try {
       const response = await axios.post(
-        "http://192.168.1.127:3000/api/infinity",
+        "http://192.168.1.79:3000/api/infinity",
         {
           words: words,
+        }
+      );
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const postSdxl = async ({ word }: { word: string }) => {
+    try {
+      const response = await axios.post(
+        "http://192.168.1.79:3000/api/ai-image",
+        {
+          word: word,
         }
       );
       console.log(response.data);
@@ -202,11 +231,34 @@ const Layout = ({ width, height }: LayoutProps) => {
   return (
     <div
       ref={divRef}
-      style={{ width: width, height: "100vh" }}
+      style={{ width: width, height: height }}
       id="layout"
       className="item-container relative "
     >
       <Mixer />
+      <button onClick={() => setCard({ ...card, active: !card.active })}>
+        Flip
+      </button>
+      <Card
+        imageFront={"/card.png"}
+        imageBack={card.image || "/card.png"}
+        cardContent={card.cardContent}
+        active={card.active}
+        // onAnimationEnd={() =>
+        //   setCard({
+        //     ...card,
+        //     cardContent: { result: "", fuseItems: "" },
+        //     active: false,
+        //   })
+        // }
+        onClose={() =>
+          setCard({
+            ...card,
+            cardContent: { result: "", fuseItems: "" },
+            active: false,
+          })
+        }
+      />
     </div>
   );
 };
